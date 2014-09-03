@@ -1,6 +1,6 @@
 ## Larapush - WebSocket and Push server
 
-### a [Ratchet](http://socketo.me) and [ZMQ](http://zeromq.org) implementation for Laravel 4.
+#### a [Ratchet](http://socketo.me) and [ZMQ](http://zeromq.org) implementation for Laravel 4.
 
 This package is still **UNDER DEVELOPMENT** but feel free to download and try it as you wish.
 
