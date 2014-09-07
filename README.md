@@ -38,11 +38,11 @@ Then run `composer update` to install the new package.
 #### How to use
 ---------------
 
-+ Start the Larapush server
+##### Start the Larapush server
 
    From the console just type `php artisan larapush:serve` to rise the WebSocket/Ratchet server up.
 
-+ Use the Larapush facade in your routes to trigger events server-side
+##### Use the Larapush facade in your routes to trigger events server-side
 
 ```php
 // app/routes.php
@@ -55,7 +55,7 @@ Route::any('profile/{nickname}', ['as' => 'profile', function($nickname)
 }]);
 ```
 
-+ Subscribe your client to **channels** and listen for **events** in the client-side
+##### Subscribe your client to **channels** and listen for **events** in the client-side
 
 #### [Larapush.js](https://github.com/redbaron76/Larapush.js) - Pub/Sub js lib for Larapush
 -------------------------------------------------------------------------------------------
