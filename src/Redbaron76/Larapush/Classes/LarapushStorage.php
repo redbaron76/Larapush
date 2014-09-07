@@ -12,6 +12,13 @@ class LarapushStorage implements LarapushStorageInterface {
 	protected $session_id;
 
 	/**
+	 * The Laravel auth user id
+	 * 
+	 * @var Auth::id()
+	 */
+	protected $user_id;
+
+	/**
 	 * An array of watchers (connected clients)
 	 * 
 	 * @var array
@@ -19,7 +26,8 @@ class LarapushStorage implements LarapushStorageInterface {
 	public $watchers = [];
 
 	/**
-	 * Sync Laravel Session ID to WAMP $resourceId
+	 * Sync Laravel Session ID (or User Id) to WAMP $resourceId
+	 * 
 	 * @var [type]
 	 */
 	public $laravels = [];
@@ -35,21 +43,49 @@ class LarapushStorage implements LarapushStorageInterface {
 	{
 		$resource_id = $watcher->resourceId;
 
-		if($this->session_id)
-		{
-			// search for changed session_id (after an Auth::attempt. maybe)
-			$laravel_id = array_search($resource_id, $this->laravels);
-
-			if($laravel_id)
-			{
-				unset($this->laravels[$laravel_id]);
-			}
-
-			// set a fresh binding
-			$this->laravels[$this->session_id] = $resource_id;
-		}
+		$this->upsyncSession($resource_id);
 		
 		$this->watchers[$resource_id] = $watcher;
+	}
+
+	/**
+	 * Update and Sync session/user Id
+	 * to $watcher->resourceId in laracasts
+	 *
+	 * @param int $resource_id
+	 * @return void
+	 */
+	private function upsyncSession($resource_id)
+	{
+		// search for changed session_id (after an Auth::attempt. maybe)
+		$laravel_sessId = array_search($resource_id, $this->laravels);
+		
+		if($laravel_sessId)
+		{
+			if($this->session_id and ! $this->user_id)
+			{
+				// Remove if already present in $laravels
+				if($laravel_sessId)
+				{
+					unset($this->laravels[$laravel_sessId]);
+				}
+				// set a fresh binding
+				$this->laravels[$this->session_id] = $resource_id;
+			}
+			elseif($this->session_id and $this->user_id)
+			{
+				// Update laravels with user_id if not already present
+				if( ! in_array($this->user_id, $this->laravels))
+				{
+					$this->laravels[$this->user_id] = $this->laravels[$this->session_id];
+					unset($this->laravels[$this->laravels[$this->session_id]]);
+				}			
+			}
+			else
+			{
+				unset($this->laravels[$laravel_sessId]);
+			}
+		}
 	}
 
 	/**
@@ -80,6 +116,17 @@ class LarapushStorage implements LarapushStorageInterface {
 	public function setSessionId($session_id)
 	{
 		$this->session_id = $session_id;
+	}
+
+	/**
+	 * Set the $user_id attribute if Auth::check()
+	 * Called in Broadcaster\pushMessageToServer
+	 * 
+	 * @param void
+	 */
+	public function setUserId($user_id)
+	{
+		$this->user_id = $user_id;
 	}
 
 }

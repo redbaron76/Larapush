@@ -43,15 +43,20 @@ class LarapushBroadcaster implements LarapushBroadcasterInterface {
 	 */
 	public function pushMessageToServer($message)
 	{
-		if(substr_count($message, '{"session_id":"') > 0)
+		if(substr_count($message, '{"session_id":"') == 0)
 		{
+			$this->events->fire('zmq.broadcast', [$this, $message]);
+		}
+		else
+		{			
 			$message = json_decode($message, true);
 			// Set the client session id to storage
 			$this->storage->setSessionId($message['session_id']);
-		}
-		else
-		{
-			$this->events->fire('zmq.broadcast', [$this, $message]);
+
+			if(in_array('user_id', $message))
+			{
+				$this->storage->setUserId($message['user_id']);
+			}			
 		}
 	}
 
