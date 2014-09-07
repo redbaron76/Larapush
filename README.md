@@ -38,6 +38,12 @@ Then run `composer update` to install the new package.
 #### How to use
 ---------------
 
+###### Start the Larapush server
+
+From the console just type `php artisan larapush:serve` to rise the WebSocket/Ratchet server up.
+
+###### Use the Larapush facade in your routes
+
 ```php
 // app/routes.php
 
