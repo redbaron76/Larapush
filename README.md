@@ -34,7 +34,7 @@ Make sure to have **ZMQ installed** on your system before to try it. [Install gu
 Then run `composer update` to install the new package.
 
 #### How to use
-===============
+---------------
 
 ```php
 // app/routes.php
