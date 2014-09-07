@@ -2,11 +2,40 @@
 
 #### a [Ratchet](http://socketo.me) and [ZMQ](http://zeromq.org) implementation for Laravel 4.
 
-This package is still **UNDER DEVELOPMENT** but feel free to download and try it as you wish.
+**This package is still **UNDER DEVELOPMENT** but feel free to download and try it as you wish.**
 
-##### a Laravel's flavoured Larapush facade usage:
+#### ZMQ is required
+
+Make sure to have **ZMQ installed** on your system before to try it. [Install guide](http://zeromq.org/bindings:php)
+
+#### How to install this package
 
 ```
+// composer.json
+
+{
+    "require": {
+        "redbaron76/larapush": "dev-master"
+    }
+}
+```
+
+```php
+// app/config/app.php
+
+'providers' => array(
+
+		...
+
+		'Redbaron76\Larapush\LarapushServiceProvider',
+	),
+```
+
+Then run `composer update` to install the new package.
+
+##### How to use
+
+```php
 // app/routes.php
 
 Route::any('profile/{nickname}', ['as' => 'profile', function($nickname)
@@ -21,8 +50,6 @@ Route::any('profile/{nickname}', ['as' => 'profile', function($nickname)
 
 In order to make your dev life easier with Larapush, please give [Larapush.js](https://github.com/redbaron76/Larapush.js) a try.
 
-#### ZMQ is required
 
-Make sure to have **ZMQ installed** on your system before to try it. [Install guide](http://zeromq.org/bindings:php)
 
 Follow my Twitter account [@FFumis](http://twitter.com/FFumis) for any update. 
