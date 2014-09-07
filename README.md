@@ -2,12 +2,15 @@
 
 #### a [Ratchet](http://socketo.me) and [ZMQ](http://zeromq.org) implementation for Laravel 4.
 
-**This package is still **UNDER DEVELOPMENT** but feel free to try it as you wish.**
+This package is still **UNDER DEVELOPMENT** but feel free to try it as you wish.
+--------------------------------------------------------------------------------
 
 #### ZMQ is required
 --------------------
 
 Make sure to have **ZMQ installed** on your system before to try it. [Install guide](http://zeromq.org/bindings:php)
+
+
 
 #### How to install this package
 --------------------------------
@@ -35,14 +38,16 @@ Make sure to have **ZMQ installed** on your system before to try it. [Install gu
 
 Then run `composer update` to install the new package.
 
+
+
 #### How to use
 ---------------
 
-##### Start the Larapush server
+##### 1) Start the Larapush server
 
    From the console just type `php artisan larapush:serve` to rise the WebSocket/Ratchet server up.
 
-##### Use the Larapush facade in your routes to trigger events server-side
+##### 2) Use the Larapush facade in your routes to trigger events server-side
 
 ```php
 // app/routes.php
@@ -55,7 +60,9 @@ Route::any('profile/{nickname}', ['as' => 'profile', function($nickname)
 }]);
 ```
 
-##### Subscribe your client to **channels** and listen for **events** in the client-side
+##### 3) Subscribe your client to **channels** and listen for **events** in the client-side
+
+
 
 #### [Larapush.js](https://github.com/redbaron76/Larapush.js) - Pub/Sub js lib for Larapush
 -------------------------------------------------------------------------------------------
