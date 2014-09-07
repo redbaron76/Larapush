@@ -37,6 +37,15 @@ class LarapushStorage implements LarapushStorageInterface {
 
 		if($this->session_id)
 		{
+			// search for changed session_id (after an Auth::attempt. maybe)
+			$laravel_id = array_search($resource_id, $this->laravels);
+
+			if($laravel_id)
+			{
+				unset($this->laravels[$laravel_id]);
+			}
+
+			// set a fresh binding
 			$this->laravels[$this->session_id] = $resource_id;
 		}
 		

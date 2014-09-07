@@ -141,9 +141,4 @@ class LarapushEventListener implements WampServerInterface {
 		echo var_dump($e);
 	}
 
-	private function formatMessage($message)
-	{
-		
-	}
-
 }

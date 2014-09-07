@@ -8,7 +8,7 @@ class LarapushFilter {
 	 * 
 	 * @return void
 	 */
-	public function larapushSync()
+	public function sessionSync()
 	{
 		\Larapush::sync(['session_id' => \Session::getId()]);
 	}

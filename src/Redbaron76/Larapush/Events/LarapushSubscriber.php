@@ -22,10 +22,10 @@ class LarapushSubscriber {
 		$socket->send($message);
 	}
 
-	public function onZmqBroadcast($message)
+	public function onZmqBroadcast($broadcaster, $message)
 	{
-		echo "onZmqBroadcast: ";
-		var_dump($message);
+		// Broadcast message to subscribed clients
+		$broadcaster->broadcastServerToClient($message);
 	}
 
 	public function onZmqSend($socket, $message)

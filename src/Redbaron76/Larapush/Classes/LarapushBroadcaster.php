@@ -51,8 +51,7 @@ class LarapushBroadcaster implements LarapushBroadcasterInterface {
 		}
 		else
 		{
-			$this->broadcastServerToClient($message);
-			$this->events->fire('zmq.broadcast', [$message]);
+			$this->events->fire('zmq.broadcast', [$this, $message]);
 		}
 	}
 

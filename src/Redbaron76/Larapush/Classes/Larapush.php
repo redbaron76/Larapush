@@ -19,6 +19,11 @@ class Larapush extends LarapushConnection {
 		$this->events = $events;
 	}
 
+	public function chat($with, $message, $where)
+	{
+
+	}
+
 	/**
 	 * Send message to ZMQ and fires a specific event
 	 * 
