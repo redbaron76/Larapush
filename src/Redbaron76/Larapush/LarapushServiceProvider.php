@@ -81,7 +81,8 @@ class LarapushServiceProvider extends ServiceProvider {
 		$this->app['Larapush'] = $this->app->share(function($app)
 		{
 			$events = $this->app->make('events');
-			return new Classes\Larapush($events);
+			$storage = $this->app->make('LarapushStorage');
+			return new Classes\Larapush($events, $storage);
 		});
 
 		// IoC Command

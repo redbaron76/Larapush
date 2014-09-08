@@ -46,21 +46,22 @@ class LarapushEventListener implements WampServerInterface {
 	}
 
 	/**
-	 * [onSubscribe description]
+	 * Triggered when a client "watches" a specific channel
+	 * 
 	 * @param  Watcher $watcher [description]
-	 * @param  [type]     $channel    [description]
-	 * @return [type]                 [description]
+	 * @param  array   $channel    [description]
+	 * @return void
 	 */
 	public function onSubscribe(Watcher $watcher, $channel)
 	{
-		$this->broadcaster->addWatchedChannel($watcher, $channel);
-		echo "onSubscribe\n";
-		echo var_dump($channel) . "\n";
-		echo "clients\n";
-		foreach ($this->storage->watchers as $key => $client) {
-			var_dump($key, $client);
-		}
-		echo var_dump($this->storage->laravels) . "\n";
+		$this->storage->addWatchedChannel($watcher, $channel);
+		echo "onSubscribe: subscribed in $channel\n";
+		// echo var_dump($channel) . "\n";
+		// echo "clients\n";
+		// foreach ($this->storage->watchers as $key => $client) {
+		// 	var_dump($key, $client);
+		// }
+		echo "laravels:\n" . var_dump($this->storage->laravels) . "\n";
 		echo "\n\n\n\n\n\n";
 	}
 
@@ -88,12 +89,12 @@ class LarapushEventListener implements WampServerInterface {
 	public function onPublish(Watcher $watcher, $channel, $event, array $exclude, array $eligible)
 	{
 		echo "onPublish\n";
+		$this->broadcaster->broadcastClientToClient($channel, $event, $exclude);
 		// echo "iterators: " . var_dump($channel->getIterator()) . "\n";
 		// echo "channel: " . var_dump($channel) . "\n";
 		// echo "event: ". var_dump($event) . "\n";
 		// echo "exclude: " . var_dump($exclude) . "\n";
-		// echo "eligible: " . var_dump($eligible) . "\n";
-		$this->broadcaster->broadcastClientToClient($channel, $event, $exclude);
+		// echo "eligible: " . var_dump($eligible) . "\n";		
 	}
 
 	// ComponentInterface -> WampServerInterface
@@ -107,13 +108,13 @@ class LarapushEventListener implements WampServerInterface {
 	{
 		$this->storage->detach($watcher);
 		echo "onClose\n";
-		echo "tot clients: " . count($this->storage->watchers) . "\n";
-		echo "clients\n";
-		foreach ($this->storage->watchers as $key => $client) {
-			var_dump($key, $client);
-		}
-		echo var_dump($this->storage->laravels) . "\n";
-		echo "\n\n\n\n\n\n";
+		echo "tot clients:\n" . count($this->storage->watchers) . "\n";
+		// echo "clients\n";
+		// foreach ($this->storage->watchers as $key => $client) {
+		// 	var_dump($key, $client);
+		// }
+		// echo var_dump($this->storage->laravels) . "\n";
+		// echo "\n\n\n\n\n\n";
 	}
 
 	/**

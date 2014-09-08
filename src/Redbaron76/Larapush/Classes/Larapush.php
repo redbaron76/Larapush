@@ -12,11 +12,19 @@ class Larapush extends LarapushConnection {
 	protected $events;
 
 	/**
+	 * LarapushStorage instance
+	 * 
+	 * @var Redbaron76\Larapush\Classes\LarapushStorage
+	 */
+	protected $storage;
+
+	/**
 	 * Larapush class constructor
 	 */
-	public function __construct(Events $events)
+	public function __construct(Events $events, LarapushStorage $storage)
 	{
 		$this->events = $events;
+		$this->storage = $storage;
 	}
 
 	public function chat($with, $message, $where)
@@ -30,14 +38,15 @@ class Larapush extends LarapushConnection {
 	 * @param  array  		$message
 	 * @param  string|array $channels
 	 * @param  string 		$event
+	 * @param  array        $user
 	 * @return void
 	 */
-	public function send($message, $channel = 'defaultChannel', $event = 'generic')
+	public function send($message, $channel = 'channel', $event = 'generic', $user = [])
 	{
 		$socket = $this->getSocket();
 
 		// Merge topic to the message and encode to json
-		$message = json_encode(array_merge(['channel' => $channel, 'event' => $event], $message));
+		$message = json_encode(array_merge(['channel' => $channel, 'event' => $event, 'user' => $user], $message));
 
 		// Fire events
 		$this->events->fire($event, [$message]);

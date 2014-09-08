@@ -20,13 +20,6 @@ class LarapushBroadcaster implements LarapushBroadcasterInterface {
 	protected $storage;
 
 	/**
-	 * A store for all the channels clients are watching
-	 * 
-	 * @var array
-	 */
-	protected $watchedChannels = [];
-
-	/**
 	 * Class constructor
 	 */
 	public function __construct(Events $events, LarapushStorage $storage)
@@ -105,21 +98,65 @@ class LarapushBroadcaster implements LarapushBroadcasterInterface {
 		// We broadcast if we have audience only!
 		if($this->checkChannelWatcher($message['channel']))
 		{
-			if(is_array($message['channel']))
+			// Set user targets
+			$targets = $message['user'];
+
+			// We have targets so filter WampConnections
+			if(count($targets) > 0)
 			{
-				foreach ($message['channel'] as $channel)
+				// remove users from message
+				unset($message['user']);
+
+				if(is_array($message['channel']))
 				{
-					if(array_key_exists($channel, $this->watchedChannels))
+					foreach ($message['channel'] as $channel)
 					{
-						$watchedChannel = $this->watchedChannels[$channel];
-						$watchedChannel->broadcast($message);
-					}					
+						if(array_key_exists($channel, $this->storage->watchedChannels))
+						{
+							$watchedChannel = $this->storage->watchedChannels[$channel];
+							
+							foreach($watchedChannel->getIterator() as $watcher)
+							{
+								if(in_array(array_search($watcher->resourceId, $this->storage->laravels), $targets))
+								{
+									$watcher->event($watchedChannel, $message);
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					$watchedChannel = $this->storage->watchedChannels[$message['channel']];
+
+					foreach($watchedChannel->getIterator() as $watcher)
+					{
+						// Check if the laravel Id in laravels related to channel watcher is in $targets 
+						if(in_array(array_search($watcher->resourceId, $this->storage->laravels), $targets))
+						{
+							$watcher->event($watchedChannel, $message);
+						}
+					}
 				}
 			}
 			else
 			{
-				$watchedChannel = $this->watchedChannels[$message['channel']];
-				$watchedChannel->broadcast($message);
+				if(is_array($message['channel']))
+				{
+					foreach ($message['channel'] as $channel)
+					{
+						if(array_key_exists($channel, $this->storage->watchedChannels))
+						{
+							$watchedChannel = $this->storage->watchedChannels[$channel];
+							$watchedChannel->broadcast($message);
+						}
+					}
+				}
+				else
+				{
+					$watchedChannel = $this->storage->watchedChannels[$message['channel']];
+					$watchedChannel->broadcast($message);
+				}
 			}
 		}
 	}
@@ -132,7 +169,7 @@ class LarapushBroadcaster implements LarapushBroadcasterInterface {
 	 */
 	private function checkChannelWatcher($channels)
 	{
-		$watched = $this->watchedChannels;
+		$watched = $this->storage->watchedChannels;
 
 		if(is_string($channels) and array_key_exists($channels, $watched))
 		{
@@ -150,32 +187,6 @@ class LarapushBroadcaster implements LarapushBroadcasterInterface {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Add a watched channel to watched channels store
-	 * 
-	 * @param Ratchet\Wamp\Connection
-	 * @param Ratchet\Wamp\Topic
-	 */
-	public function addWatchedChannel($connection, $channel)
-	{
-		if( ! array_key_exists($channel->getId(), $this->watchedChannels))
-		{
-			$this->watchedChannels[$channel->getId()] = $channel;
-		}
-	}
-	
-	/**
-	 * Reset watched channels store
-	 * 
-	 * @return void
-	 */
-	public function resetWatchedChannels()
-	{
-		$this->watchedChannels = [];
-	}
-
-	
+	}	
 
 }

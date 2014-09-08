@@ -30,7 +30,7 @@ class LarapushSubscriber {
 
 	public function onZmqSend($socket, $message)
 	{
-		// Send to ZeroMQ Server
+		// Send from facade to ZeroMQ Server
 		$socket->send($message);
 	}
 
