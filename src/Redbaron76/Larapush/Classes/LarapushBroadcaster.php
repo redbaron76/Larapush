@@ -20,6 +20,13 @@ class LarapushBroadcaster implements LarapushBroadcasterInterface {
 	protected $storage;
 
 	/**
+	 * Suitable user targets
+	 * 
+	 * @var array
+	 */
+	protected $targets = [];
+
+	/**
 	 * Class constructor
 	 */
 	public function __construct(Events $events, LarapushStorage $storage)
@@ -95,70 +102,99 @@ class LarapushBroadcaster implements LarapushBroadcasterInterface {
 		// Decode serialized message into array
 		$message = json_decode($message, true);
 
+		$hasTarget = false;
+
 		// We broadcast if we have audience only!
 		if($this->checkChannelWatcher($message['channel']))
 		{
 			// Set user targets
-			$targets = $message['user'];
+			$this->targets = $message['user'];
 
-			// We have targets so filter WampConnections
-			if(count($targets) > 0)
+			if(count($this->targets) > 0)
 			{
-				// remove users from message
+				// Remove user targets from the message
 				unset($message['user']);
+				$hasTarget = true;
+			}
 
-				if(is_array($message['channel']))
+			if(is_array($message['channel']))
+			{
+				foreach ($message['channel'] as $channel)
 				{
-					foreach ($message['channel'] as $channel)
+					if(array_key_exists($channel, $this->storage->watchedChannels))
 					{
-						if(array_key_exists($channel, $this->storage->watchedChannels))
-						{
-							$watchedChannel = $this->storage->watchedChannels[$channel];
-							
-							foreach($watchedChannel->getIterator() as $watcher)
-							{
-								if(in_array(array_search($watcher->resourceId, $this->storage->laravels), $targets))
-								{
-									$watcher->event($watchedChannel, $message);
-								}
-							}
-						}
-					}
-				}
-				else
-				{
-					$watchedChannel = $this->storage->watchedChannels[$message['channel']];
-
-					foreach($watchedChannel->getIterator() as $watcher)
-					{
-						// Check if the laravel Id in laravels related to channel watcher is in $targets 
-						if(in_array(array_search($watcher->resourceId, $this->storage->laravels), $targets))
-						{
-							$watcher->event($watchedChannel, $message);
-						}
+						$watchedChannel = $this->storage->watchedChannels[$channel];						
+						$this->sendToChannelOrTarget($hasTarget, $message, $watchedChannel);
 					}
 				}
 			}
 			else
 			{
-				if(is_array($message['channel']))
-				{
-					foreach ($message['channel'] as $channel)
-					{
-						if(array_key_exists($channel, $this->storage->watchedChannels))
-						{
-							$watchedChannel = $this->storage->watchedChannels[$channel];
-							$watchedChannel->broadcast($message);
-						}
-					}
-				}
-				else
-				{
-					$watchedChannel = $this->storage->watchedChannels[$message['channel']];
-					$watchedChannel->broadcast($message);
-				}
+				$watchedChannel = $this->storage->watchedChannels[$message['channel']];
+				$this->sendToChannelOrTarget($hasTarget, $message, $watchedChannel);
 			}
 		}
+	}
+
+	/**
+	 * Check where to send a message
+	 * 
+	 * @param  bool   $hasTarget
+	 * @param  array  $message
+	 * @param  object $watchedChannel
+	 * @return void
+	 */
+	private function sendToChannelOrTarget($hasTarget, $message, $watchedChannel)
+	{
+		if($hasTarget)
+		{
+			$this->sendToTarget($message, $watchedChannel);
+		}
+		else
+		{
+			$this->sendToChannel($message, $watchedChannel);
+		}
+	}
+
+	/**
+	 * Send a message to a channel (broadcast to all watchers)
+	 * 
+	 * @param  array  $message
+	 * @param  object $watchedChannel
+	 * @return void
+	 */
+	private function sendToChannel($message, $watchedChannel)
+	{
+		$watchedChannel->broadcast($message);
+	}
+
+	/**
+	 * Send message to target on watched channel
+	 * 
+	 * @param  array  $message
+	 * @param  object $watchedChannel
+	 * @return void
+	 */
+	private function sendToTarget($message, $watchedChannel)
+	{
+		foreach($watchedChannel->getIterator() as $watcher)
+		{
+			if($this->suitableTarget($watcher->resourceId))
+			{
+				$watcher->event($watchedChannel, $message);
+			}
+		}
+	}
+
+	/**
+	 * Check if a channel watcher is a suitable target
+	 * 
+	 * @param  int $resourceId - watcher resource id
+	 * @return bool
+	 */
+	private function suitableTarget($resourceId)
+	{
+		return in_array(array_search($resourceId, $this->storage->laravels), $this->targets);
 	}
 
 	/**
