@@ -1,7 +1,8 @@
 {
     "name": "redbaron76/larapush",
     "description": "a Ratchet and ZMQ implementation for Laravel 4",
-    "keywords": "[websocket, server, ratchet, pusher, laravel, laravel4]",
+    "keywords": ["websocket", "server", "ratchet", "pusher", "laravel", "laravel4"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Fabio Fumis",
@@ -19,6 +20,5 @@
             "Redbaron76\\Larapush": "src/"
         }
     },
-    "minimum-stability": "dev",
-    "prefere-stable": true
+    "minimum-stability": "dev"
 }
