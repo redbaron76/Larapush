@@ -61,7 +61,9 @@ Route::any('profile/{nickname}', ['as' => 'profile', function($nickname)
 
 ##### 3) Subscribe your client to **channels** and listen for **events** in the client-side
 
+![Server and client-side code](https://cloud.githubusercontent.com/assets/1061849/4200106/e8efe940-380c-11e4-8546-bda32652fa65.png)
 
+![Results on browser](https://cloud.githubusercontent.com/assets/1061849/4200111/fdacdf0a-380c-11e4-9c91-0d71e7c99d26.png)
 
 #### [Larapush.js](https://github.com/redbaron76/Larapush.js) - Pub/Sub js lib for Larapush
 -------------------------------------------------------------------------------------------

@@ -49,15 +49,37 @@ class LarapushBroadcaster implements LarapushBroadcasterInterface {
 		}
 		else
 		{			
-			$message = json_decode($message, true);
-			// Set the client session id to storage
-			$this->storage->setSessionId($message['session_id']);
-
-			if(in_array('user_id', $message))
-			{
-				$this->storage->setUserId($message['user_id']);
-			}			
+			$this->syncStorageAction($message);
 		}
+	}
+
+	/**
+	 * Set storage parameters for session sync
+	 * 
+	 * @param  string $message
+	 * @return void
+	 */
+	private function syncStorageAction($message)
+	{
+		$message = json_decode($message, true);
+
+		// Set the client session id to storage
+		$this->storage->setSessionId($message['session_id']);
+
+		if(array_key_exists('user_id', $message))
+		{
+			// Set the Laravel user id to store
+			$this->storage->setUserId($message['user_id']);
+		}
+
+		if(array_key_exists('remove_id', $message))
+		{
+			// Remove the laravel user id from store
+			$this->storage->removeUserId($message['remove_id']);
+		}
+
+		echo "message: \n";
+		var_dump($message);
 	}
 
 	/**

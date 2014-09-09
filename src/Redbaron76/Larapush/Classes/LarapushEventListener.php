@@ -55,14 +55,14 @@ class LarapushEventListener implements WampServerInterface {
 	public function onSubscribe(Watcher $watcher, $channel)
 	{
 		$this->storage->addWatchedChannel($watcher, $channel);
-		echo "onSubscribe: subscribed in $channel\n";
+		// echo "onSubscribe: subscribed in $channel\n";
 		// echo var_dump($channel) . "\n";
 		// echo "clients\n";
 		// foreach ($this->storage->watchers as $key => $client) {
 		// 	var_dump($key, $client);
 		// }
-		echo "laravels:\n" . var_dump($this->storage->laravels) . "\n";
-		echo "\n\n\n\n\n\n";
+		// echo "laravels:\n" . var_dump($this->storage->laravels) . "\n";
+		// echo "\n\n\n\n\n\n";
 	}
 
 	/**
@@ -100,24 +100,6 @@ class LarapushEventListener implements WampServerInterface {
 	// ComponentInterface -> WampServerInterface
 
 	/**
-	 * onClose a connection, detach it from storage
-	 * @param  Watcher $watcher
-	 * @return void
-	 */
-	public function onClose(Watcher $watcher)
-	{
-		$this->storage->detach($watcher);
-		echo "onClose\n";
-		echo "tot clients:\n" . count($this->storage->watchers) . "\n";
-		// echo "clients\n";
-		// foreach ($this->storage->watchers as $key => $client) {
-		// 	var_dump($key, $client);
-		// }
-		// echo var_dump($this->storage->laravels) . "\n";
-		// echo "\n\n\n\n\n\n";
-	}
-
-	/**
 	 * onOpen a new connection, attach it to storage
 	 * @param  Watcher $watcher
 	 * @return void
@@ -125,9 +107,27 @@ class LarapushEventListener implements WampServerInterface {
 	public function onOpen(Watcher $watcher)
 	{
 		$this->storage->attach($watcher);
-		echo "onOpen\n";
-		echo "tot clients: " . count($this->storage->watchers) . "\n";
-		echo "\n\n";
+		// echo "onOpen\n";
+		// echo "tot clients: " . count($this->storage->watchers) . "\n";
+		// echo "\n\n";
+	}
+	
+	/**
+	 * onClose a connection, detach it from storage
+	 * @param  Watcher $watcher
+	 * @return void
+	 */
+	public function onClose(Watcher $watcher)
+	{
+		$this->storage->detach($watcher);
+		// echo "onClose\n";
+		// echo "tot clients:\n" . count($this->storage->watchers) . "\n";
+		// echo "clients\n";
+		// foreach ($this->storage->watchers as $key => $client) {
+		// 	var_dump($key, $client);
+		// }
+		// echo var_dump($this->storage->laravels) . "\n";
+		// echo "\n\n\n\n\n\n";
 	}
 
 	/**

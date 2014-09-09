@@ -19,6 +19,20 @@ class LarapushStorage implements LarapushStorageInterface {
 	protected $user_id;
 
 	/**
+	 * The Laravel auth user id to remove from laravels
+	 * 
+	 * @var Auth::id()
+	 */
+	protected $remove_id;
+
+	/**
+	 * A flag to remove or not user
+	 * 
+	 * @var boolean
+	 */
+	protected $remove = false;
+
+	/**
 	 * Sync Laravel Session ID (or User Id) to WAMP $resourceId
 	 * 
 	 * @var [type]
@@ -57,46 +71,15 @@ class LarapushStorage implements LarapushStorageInterface {
 	{
 		$resource_id = $watcher->resourceId;
 
-		$this->upsyncSession($resource_id);
-		
-		$this->watchers[$resource_id] = $watcher;
-	}
+		if($this->upsyncSession($resource_id))
+		{
+			$this->watchers[$resource_id] = $watcher;
+		}
 
-	/**
-	 * Update and Sync session/user Id
-	 * to $watcher->resourceId in laracasts
-	 *
-	 * @param int $resource_id
-	 * @return void
-	 */
-	private function upsyncSession($resource_id)
-	{
-		// search for changed session_id (after an Auth::attempt. maybe)
-		$laravel_sessId = array_search($resource_id, $this->laravels);
-		
-		if($this->session_id and ! $this->user_id)
-		{
-			// Remove if already present in $laravels
-			if($laravel_sessId)
-			{
-				unset($this->laravels[$laravel_sessId]);
-			}
-			// set a fresh binding
-			$this->laravels[$this->session_id] = $resource_id;
-		}
-		elseif($this->session_id and $this->user_id)
-		{
-			// Update laravels with user_id if not already present
-			if( ! in_array($this->user_id, $this->laravels))
-			{
-				$this->laravels[$this->user_id] = $this->laravels[$this->session_id];
-				unset($this->laravels[$this->laravels[$this->session_id]]);
-			}			
-		}
-		else
-		{
-			unset($this->laravels[$laravel_sessId]);
-		}
+		$this->cleanUpLaravels();
+
+		echo "watchers:\n";
+		var_dump($this->watchers);
 	}
 
 	/**
@@ -111,11 +94,77 @@ class LarapushStorage implements LarapushStorageInterface {
 		$resource_id = $watcher->resourceId;
 
 		// Unset watcher from laravels[]
-		$laravel_id = array_search($resource_id, $this->laravels);
+		$laravel_id = $this->getLaravelsKey($resource_id);
 		unset($this->laravels[$laravel_id]);
 		
 		// Unset watcher from watchers
 		unset($this->watchers[$watcher->resourceId]);
+	}
+
+	/**
+	 * Update and Sync session/user Id
+	 * to $watcher->resourceId in laravels
+	 *
+	 * @param int $resource_id
+	 * @return bool
+	 */
+	private function upsyncSession($resource_id)
+	{		
+		if( ! $this->remove_id and ! $this->user_id and $this->session_id)
+		{
+			$this->laravels[$this->session_id] = $resource_id;
+			echo "set session_id in laravels\n\n";
+		}
+
+		if( ! $this->remove_id and $this->user_id and $this->session_id)
+		{
+			$this->laravels[$this->user_id] = $resource_id;
+			echo "set user_id in laravels\n\n";
+		}
+
+		if( ! $this->user_id and $this->remove_id and $this->session_id)
+		{
+			$this->laravels[$this->session_id] = $resource_id;
+			unset($this->laravels[$this->remove_id]);
+			echo "remove user_id in laravels\n\n";
+		}
+
+		echo "laravels:\n";
+		var_dump($this->laravels);
+		return true;
+	}
+
+	/**
+	 * Cleanup dead laravels associations
+	 * 
+	 * @return void
+	 */
+	private function cleanUpLaravels()
+	{
+		$watchersKeys = array_keys($this->watchers);
+
+		foreach ($this->laravels as $key => $laravel)
+		{
+			if( ! in_array($laravel, $watchersKeys))
+			{
+				unset($this->laravels[$key]);
+			}
+		}
+
+		$this->user_id = null;
+		$this->remove_id = null;
+		$this->remove = false;
+	}
+
+	/**
+	 * Get the key of the array in $laravels
+	 * 
+	 * @param  int     $resource_id
+	 * @return string
+	 */
+	public function getLaravelsKey($resource_id)
+	{
+		return array_search($resource_id, $this->laravels);
 	}
 
 	/**
@@ -138,6 +187,22 @@ class LarapushStorage implements LarapushStorageInterface {
 	public function setUserId($user_id)
 	{
 		$this->user_id = $user_id;
+		$this->remove_id = null;
+		$this->remove = false;
+	}
+
+	/**
+	 * Set the $user_id attribute if Auth::logout()
+	 * and flag remove as true.
+	 * Called in Broadcaster\pushMessageToServer
+	 * 
+	 * @param void
+	 */
+	public function removeUserId($user_id)
+	{
+		$this->remove_id = $user_id;
+		$this->user_id = null;
+		$this->remove = true;
 	}
 
 	/**

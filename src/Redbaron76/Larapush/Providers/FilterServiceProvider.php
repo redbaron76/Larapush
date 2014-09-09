@@ -14,6 +14,7 @@ class FilterServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->app->router->filter('sessionSync', self::$filterPath . 'LarapushFilter@sessionSync');
+		$this->app->router->filter('sessionRemove', self::$filterPath . 'LarapushFilter@sessionRemove');
 	}
 
 	/**
