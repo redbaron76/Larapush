@@ -78,8 +78,8 @@ class LarapushStorage implements LarapushStorageInterface {
 
 		$this->cleanUpLaravels();
 
-		echo "watchers:\n";
-		var_dump($this->watchers);
+		// echo "watchers:\n";
+		// var_dump($this->watchers);
 	}
 
 	/**
@@ -113,24 +113,25 @@ class LarapushStorage implements LarapushStorageInterface {
 		if( ! $this->remove_id and ! $this->user_id and $this->session_id)
 		{
 			$this->laravels[$this->session_id] = $resource_id;
-			echo "set session_id in laravels\n\n";
+			// echo "set session_id in laravels\n\n";
 		}
 
 		if( ! $this->remove_id and $this->user_id and $this->session_id)
 		{
 			$this->laravels[$this->user_id] = $resource_id;
-			echo "set user_id in laravels\n\n";
+			// echo "set user_id in laravels\n\n";
 		}
 
 		if( ! $this->user_id and $this->remove_id and $this->session_id)
 		{
 			$this->laravels[$this->session_id] = $resource_id;
 			unset($this->laravels[$this->remove_id]);
-			echo "remove user_id in laravels\n\n";
+			// echo "remove user_id in laravels\n\n";
 		}
 
-		echo "laravels:\n";
-		var_dump($this->laravels);
+		// echo "laravels:\n";
+		// var_dump($this->laravels);
+		
 		return true;
 	}
 

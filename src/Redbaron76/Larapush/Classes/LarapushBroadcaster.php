@@ -43,13 +43,13 @@ class LarapushBroadcaster implements LarapushBroadcasterInterface {
 	 */
 	public function pushMessageToServer($message)
 	{
-		if(substr_count($message, '{"session_id":"') == 0)
+		if(substr($message, 0, 15) == '{"session_id":"')
 		{
-			$this->events->fire('zmq.broadcast', [$this, $message]);
+			$this->syncStorageAction($message);
 		}
 		else
-		{			
-			$this->syncStorageAction($message);
+		{	
+			$this->events->fire('zmq.broadcast', [$this, $message]);			
 		}
 	}
 
@@ -78,8 +78,8 @@ class LarapushBroadcaster implements LarapushBroadcasterInterface {
 			$this->storage->removeUserId($message['remove_id']);
 		}
 
-		echo "message: \n";
-		var_dump($message);
+		// echo "message: \n";
+		// var_dump($message);
 	}
 
 	/**

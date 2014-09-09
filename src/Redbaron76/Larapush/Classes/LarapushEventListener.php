@@ -90,6 +90,9 @@ class LarapushEventListener implements WampServerInterface {
 	{
 		echo "onPublish\n";
 		$this->broadcaster->broadcastClientToClient($channel, $event, $exclude);
+
+		// TODO
+
 		// echo "iterators: " . var_dump($channel->getIterator()) . "\n";
 		// echo "channel: " . var_dump($channel) . "\n";
 		// echo "event: ". var_dump($event) . "\n";
@@ -111,7 +114,7 @@ class LarapushEventListener implements WampServerInterface {
 		// echo "tot clients: " . count($this->storage->watchers) . "\n";
 		// echo "\n\n";
 	}
-	
+
 	/**
 	 * onClose a connection, detach it from storage
 	 * @param  Watcher $watcher

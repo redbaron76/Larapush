@@ -27,9 +27,18 @@ class Larapush extends LarapushConnection {
 		$this->storage = $storage;
 	}
 
-	public function chat($with, $message, $where)
+	/**
+	 * Send message to Laravel's user(s) id
+	 * 
+	 * @param  array  $with    - an array of laravel user id
+	 * @param  array  $message - an array of data (will be jsoned)
+	 * @param  string $where   - a channel
+	 * @param  string $event   - an event
+	 * @return void
+	 */
+	public function chat($with, $message, $where = 'chat.channel', $event = 'chat.event')
 	{
-
+		$this->send(['message' => $message], $where, 'chat.event', $with);
 	}
 
 	/**

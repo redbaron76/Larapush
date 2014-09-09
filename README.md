@@ -44,7 +44,7 @@ Then run `composer update` to install the new package.
 
 ##### 1) Start the Larapush server
 
-   From the console just type `php artisan larapush:serve` to rise the WebSocket/Ratchet server up.
+   From the console just type `php artisan larapush:serve` (--port=8080) to rise the WebSocket/Ratchet server up.
 
 ##### 2) Use the Larapush facade in your routes to trigger events server-side
 
@@ -81,4 +81,15 @@ This will maintain your sessions in sync and you'll be able to perform a target 
 
 In order to make your dev life easier with Larapush, please give [Larapush.js](https://github.com/redbaron76/Larapush.js) a try.
 
-###### Follow my Twitter account [@FFumis](http://twitter.com/FFumis) for any update. 
+###### Follow my Twitter account [@FFumis](http://twitter.com/FFumis) for any update.
+
+
+
+
+#### TODO
+---------
+
+1. A logging (Monolog) system
+2. Client-to-client websocket communication with server authorization
+3. Automatic channel(s) subscription on joining routes
+4. ...and really open to any suggestion/contribution!! Please, ask!
