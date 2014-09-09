@@ -65,6 +65,17 @@ Route::any('profile/{nickname}', ['as' => 'profile', function($nickname)
 
 ![Results on browser](https://cloud.githubusercontent.com/assets/1061849/4200111/fdacdf0a-380c-11e4-9c91-0d71e7c99d26.png)
 
+##### 4) Laravel - Ratchet session sync
+
+In order to have Laravel session synced with the Ratchet server one, **YOU MUST** use specific Larapush filters in your routes:
+
+1. Use `'before' => 'sessionRemove'` wherever you perform a **logout** action.
+2. Use `'after' => 'sessionSync'` wherever you perform a **login** action and in **any authenticated route**.
+
+This will maintain your sessions in sync and you'll be able to perform a target `Larapush::send()`.
+
+![Use of Larapush filters](https://cloud.githubusercontent.com/assets/1061849/4200270/f52d8e68-380e-11e4-9c8d-c5d6af246bb0.png)
+
 #### [Larapush.js](https://github.com/redbaron76/Larapush.js) - Pub/Sub js lib for Larapush
 -------------------------------------------------------------------------------------------
 
